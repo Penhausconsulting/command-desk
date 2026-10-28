@@ -4,265 +4,100 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f0f12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Command Desk">
 <title>Penhaus Command Desk</title>
 <style>
-  :root{--bg:#0f0f12;--card:#18181d;--card2:#1f1f26;--line:#2a2a33;--ink:#f5f5f7;--dim:#9a9aa6;--lime:#c0ff00}
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-x:hidden}
-  .wrap{max-width:820px;margin:0 auto;padding:18px 14px calc(60px + env(safe-area-inset-bottom))}
-  header{text-align:center;padding:8px 0 12px}
-  .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);font-weight:700}
-  h1{font-size:25px;margin:6px 0 4px;letter-spacing:-.02em}
-  .sub{color:var(--dim);font-size:13px;margin:0}
-  .owner{margin:14px auto 6px;max-width:360px;background:linear-gradient(135deg,#232a00,#15151a);border:1px solid #3d4a00;border-radius:16px;padding:13px;text-align:center}
-  .owner .name{font-size:16px;font-weight:800}
-  .owner .role{font-size:12px;color:var(--lime);margin-top:2px}
-  .stem{width:2px;height:14px;background:#3a3a44;margin:0 auto}
-  .cos{margin:0 auto;max-width:430px;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--lime);border-radius:16px;padding:13px 15px}
-  .cos .name{font-weight:800;font-size:15px}
-  .cos .role{font-size:12px;color:var(--dim);margin-top:3px;line-height:1.45}
-  .tabs{display:flex;gap:8px;margin:16px 0 8px;overflow-x:auto;padding-bottom:2px}
-  .tab{flex:0 0 auto;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--dim);font-size:13px;font-weight:700}
-  .tab.on{background:var(--lime);color:#141414;border-color:var(--lime)}
-  .searchwrap{padding:6px 0 8px}
-  input[type=search]{width:100%;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:15px;padding:0 14px;outline:none}
-  input[type=search]:focus{border-color:var(--lime)}
-  .sec{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:700;margin:20px 4px 8px}
-  .dept{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:11px;overflow:hidden}
-  .depthead{display:flex;align-items:center;gap:12px;padding:13px;min-height:62px;width:100%;background:none;border:0;color:inherit;text-align:left;font:inherit}
-  .dot{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;color:#0f0f12;flex:0 0 38px}
-  .dname{display:block;font-weight:800;font-size:15px}
-  .drole{display:block;font-size:12px;color:var(--dim);margin-top:2px;line-height:1.4}
-  .chev{margin-left:auto;color:var(--dim);font-size:18px;transition:transform .18s}
-  .dept.open .chev{transform:rotate(90deg)}
-  .body{display:none;border-top:1px solid var(--line);padding:8px}
-  .dept.open .body{display:block}
-  .agent{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px;margin:6px 0}
-  .aname{font-weight:800;font-size:13.5px}
-  .arole{font-size:12px;color:var(--dim);margin-top:2px;line-height:1.45}
-  .acts{margin:7px 0 0;padding:0;list-style:none}
-  .acts li{font-size:12px;color:#d6d6de;line-height:1.5;padding-left:14px;position:relative}
-  .acts li:before{content:"→";position:absolute;left:0;color:var(--dim)}
-  .tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;border-radius:999px;margin-top:6px;margin-right:4px}
-  .reg{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 10px}
-  .row{display:flex;gap:10px;padding:9px 4px;border-bottom:1px solid rgba(255,255,255,.05);align-items:flex-start}
-  .row:last-child{border-bottom:0}
-  .rname{font-size:13px;font-weight:700}
-  .rdesc{font-size:11.5px;color:var(--dim);line-height:1.45;margin-top:2px}
-  .pill{flex:0 0 auto;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 7px;border-radius:999px;background:#26262e;color:#c9c9d4;margin-top:2px}
-  .tools{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-  .tool{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px}
-  .tname{font-size:13px;font-weight:800}
-  .tstate{font-size:11px;margin-top:3px;line-height:1.4}
-  .ok{color:#3ddc84}.no{color:#f0a35e}
-  footer{margin-top:24px;text-align:center;color:var(--dim);font-size:12px;line-height:1.6}
-  .hint{color:var(--lime);font-weight:700}
-  @media (max-width:360px){.tools{grid-template-columns:1fr}}
+:root{--bg:#0f0f12;--card:#18181d;--card2:#1f1f26;--line:#2a2a33;--ink:#f5f5f7;--dim:#9a9aa6;--lime:#c0ff00}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-x:hidden}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px calc(50px + env(safe-area-inset-bottom))}
+header{text-align:center;padding:6px 0 12px}
+.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);font-weight:700}
+h1{font-size:25px;margin:6px 0 4px;letter-spacing:-.02em}
+.sub{color:var(--dim);font-size:13px;margin:0}
+.owner{margin:14px auto 6px;max-width:360px;background:linear-gradient(135deg,#232a00,#15151a);border:1px solid #3d4a00;border-radius:16px;padding:13px;text-align:center}
+.owner .name{font-size:16px;font-weight:800}
+.owner .role{font-size:12px;color:var(--lime);margin-top:2px}
+.stem{width:2px;height:14px;background:#3a3a44;margin:0 auto}
+.cos{margin:0 auto;max-width:430px;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--lime);border-radius:16px;padding:13px 15px}
+.cos .name{font-weight:800;font-size:15px}
+.cos .role{font-size:12px;color:var(--dim);margin-top:3px;line-height:1.45}
+.sec{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:700;margin:22px 4px 8px}
+h2.dname{font-size:15px;margin:0}
+details{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:11px;overflow:hidden}
+details[open]{border-color:#3d4a00}
+summary{display:flex;align-items:center;gap:12px;padding:13px;min-height:62px;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+.dot{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;color:#0f0f12;flex:0 0 38px}
+.drole{display:block;font-size:12px;color:var(--dim);margin-top:2px;line-height:1.4}
+.chev{margin-left:auto;color:var(--lime);font-size:20px;font-weight:700}
+details[open] .chev{transform:rotate(90deg)}
+.body{border-top:1px solid var(--line);padding:8px}
+.agent{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px;margin:6px 0}
+.aname{font-weight:800;font-size:13.5px}
+.arole{font-size:12px;color:var(--dim);margin-top:2px;line-height:1.45}
+footer{text-align:center;color:var(--dim);font-size:11px;margin-top:22px;line-height:1.7}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="eyebrow">MissMoney Presents</div>
-    <h1>Penhaus Command Desk</h1>
-    <p class="sub">Everyone on the team, what they do, and what runs when.</p>
-  </header>
+<header>
+<div class="eyebrow">Penhaus Consulting</div>
+<h1>Command Desk</h1>
+<p class="sub">Owner, chief of staff, eight departments</p>
+</header>
 
-  <div class="owner">
-    <div class="name">RENEE WIGGINS</div>
-    <div class="role">Owner · direction, approvals, final call</div>
-  </div>
-  <div class="stem"></div>
-  <div class="cos">
-    <div class="name">MISS MONEY (OMEGA)</div>
-    <div class="role">Chief of Staff. Runs every department, holds the skills registry, reports to you in chat, and escalates anything that spends money or touches other people.</div>
-  </div>
+<div class="owner"><div class="name">Tokenua Renee Wiggins</div><div class="role">Owner and Founder</div></div>
+<div class="stem"></div>
+<div class="cos"><div class="name">MissMoney (Omega)</div><div class="role">Chief of Staff. Runs the desk, holds the goals, reports up only when a decision is yours.</div></div>
 
-  <div class="tabs">
-    <button class="tab on" data-view="team">Team</button>
-    <button class="tab" data-view="skills">Skills</button>
-    <button class="tab" data-view="tools">Tools</button>
-  </div>
+<div class="sec">Departments &mdash; tap to open</div>
 
-  <div class="searchwrap"><input type="search" id="q" placeholder="Search a person, skill, or action..." aria-label="Search"></div>
+<details><summary><span class="dot" style="background:#c0ff00">A</span><span><h2 class="dname">ATLAS</h2><span class="drole">Revenue and sales. Leads, pitches, closings.</span></span><span class="chev">&rsaquo;</span></summary><div class="body">
+<div class="agent"><div class="aname">CRO Agent</div><div class="arole">Owns the pipeline and quotes high first: OPS $499/mo or $4,990/yr, Boardroom $297/mo or $2,970/yr.</div></div>
+<div class="agent"><div class="aname">Scout</div><div class="arole">Finds intent-based buyers only. People already asking for the help we sell.</div></div>
+</div></details>
 
-  <div id="view-team"></div>
-  <div id="view-skills" style="display:none"></div>
-  <div id="view-tools" style="display:none"></div>
+<details><summary><span class="dot" style="background:#ff9ecb">V</span><span><h2 class="dname">VERA</h2><span class="drole">Beauty Lane with Kathleen O'Connell-Tefft.</span></span><span class="chev">&rsaquo;</span></summary><div class="body">
+<div class="agent"><div class="aname">Beauty Lane Lead</div><div class="arole">Makeup and styling on set, beauty content, beauty clients. $75 per look, 20 percent of referred beauty revenue.</div></div>
+</div></details>
 
-  <footer>
-    Ask MissMoney in chat and she runs any of it.<br>
-    <span class="hint">Rule: high ticket first, annual first, never negotiate down.</span>
-  </footer>
+<details><summary><span class="dot" style="background:#8ee6a0">S</span><span><h2 class="dname">SAGE</h2><span class="drole">Herb Lane and Penhaus Roots.</span></span><span class="chev">&rsaquo;</span></summary><div class="body">
+<div class="agent"><div class="aname">Herb Desk</div><div class="arole">Grow guides, remedies, affiliate picks. Same rule: quote high, never discount.</div></div>
+</div></details>
+
+<details><summary><span class="dot" style="background:#9ecbff">A</span><span><h2 class="dname">ANTON</h2><span class="drole">Social and content engine, @naetalksomuch.</span></span><span class="chev">&rsaquo;</span></summary><div class="body">
+<div class="agent"><div class="aname">Scribe</div><div class="arole">Scripts and captions. No religious or political framing, ever.</div></div>
+<div class="agent"><div class="aname">Mental Laws</div><div class="arole">The Kybalion and Master Key series, business framing only.</div></div>
+<div class="agent"><div class="aname">Scam Watch</div><div class="arole">Daily scam pattern, one clear tell and one action.</div></div>
+<div class="agent"><div class="aname">Agro</div><div class="arole">Homestead and kitchen content, affiliate driven.</div></div>
+<div class="agent"><div class="aname">Roster Desk</div><div class="arole">33 AI personas, daily posts, labeled, fully clothed, white-labeled.</div></div>
+</div></details>
+
+<details><summary><span class="dot" style="background:#ffd479">V</span><span><h2 class="dname">VANGUARD</h2><span class="drole">Product and research.</span></span><span class="chev">&rsaquo;</span></summary><div class="body">
+<div class="agent"><div class="aname">Radar</div><div class="arole">Trending products with real signal only, never invented numbers.</div></div>
+<div class="agent"><div class="aname">Pack Builder</div><div class="arole">Turns research into sellable bundles and printables.</div></div>
+</div></details>
+
+<details><summary><span class="dot" style="background:#f2f2f2">M</span><span><h2 class="dname">MISS MONEY DESK</h2><span class="drole">Grants, bids, security, launch.</span></span><span class="chev">&rsaquo;</span></summary><div class="body">
+<div class="agent"><div class="aname">Grants</div><div class="arole">Funder research and deadlines. Fit before volume.</div></div>
+<div class="agent"><div class="aname">Bid Watch</div><div class="arole">Hartford and state solicitations matching NAICS 541611, 541613, 611430.</div></div>
+<div class="agent"><div class="aname">Sentinel</div><div class="arole">Account and security alerts, payment failures, login anomalies.</div></div>
+<div class="agent"><div class="aname">Launch Desk</div><div class="arole">Go-live list. One action, one owner, one time estimate.</div></div>
+</div></details>
+
+<details><summary><span class="dot" style="background:#d8b4fe">H</span><span><h2 class="dname">HALO</h2><span class="drole">Clients and family.</span></span><span class="chev">&rsaquo;</span></summary><div class="body">
+<div class="agent"><div class="aname">Client Desk</div><div class="arole">33 persona clients on the Penhaus Desk at $499/mo.</div></div>
+<div class="agent"><div class="aname">Family Ops</div><div class="arole">Thirteen paid roles, gated so payroll stays under 25 percent of collected revenue.</div></div>
+</div></details>
+
+<details><summary><span class="dot" style="background:#fca5a5">G</span><span><h2 class="dname">GATEKEEPER</h2><span class="drole">Inbox, calendar, life admin.</span></span><span class="chev">&rsaquo;</span></summary><div class="body">
+<div class="agent"><div class="aname">Inbox</div><div class="arole">Labels what needs you, files the rest, never deletes.</div></div>
+<div class="agent"><div class="aname">Calendar</div><div class="arole">Flags conflicts only in the next seven days.</div></div>
+</div></details>
+
+<footer>Penhaus Consulting, Hartford CT<br>High ticket, annual first, all sales final.</footer>
 </div>
-
-<script>
-const DEPTS = [
-  { key:"revenue", name:"ATLAS", color:"#f76b1c", title:"Revenue & Sales", role:"Hunts leads, quotes high ticket, closes",
-    agents:[
-      {n:"Atlas · Director", r:"Owns the pipeline and the close.", a:["Logs every lead with the offer that fits","Quotes highest package first, annual before monthly","Books the call and sends the checkout link"]},
-      {n:"CRO Agent", r:"Chief revenue officer. Numbers, not activity.", a:["Morning report: money in, promised, at risk","Weekly forecast by dollars per hour of effort","Records why deals die"]},
-      {n:"Scout", r:"Intent-based lead finder, never cold blasts.", a:["Finds people already asking for help","Logs platform, link, date, what they asked","Drafts the first reply for approval"]}
-    ],
-    skills:[["First Sale Watch","Daily 8 AM"],["Pipeline Review","On demand"],["Pricing Guardrail","Always on"],["Sales Alert","Instant"]] },
-
-  { key:"beauty", name:"VERA", color:"#e8859b", title:"Beauty Lane", role:"Salons, stylists, cosmetologists",
-    agents:[
-      {n:"Vera · Director", r:"Owns the beauty lane end to end.", a:["Scores salon websites 0-100 with top 3 fixes","Raises the beauty grant list","Quotes Boardroom and Provision"]},
-      {n:"Salon Scout", r:"Finds salons already asking for help.", a:["Scans groups and forums for booking pain","Logs lead plus offer fit"]},
-      {n:"Glow Writer", r:"Beauty content in your voice.", a:["Before and after post ideas","Seasonal promos for stylist clients"]}
-    ],
-    skills:[["Salon Funnel Audit","On request"],["Cosmetology Grants","Daily"],["Creative Faces (Kathleen)","Free gift only"]] },
-
-  { key:"herb", name:"SAGE", color:"#8fb339", title:"Herb Lane · Penhaus Roots", role:"Teas, plants, 16oz bitters",
-    agents:[
-      {n:"Sage · Director", r:"Owns the herbal product line.", a:["Writes blend and bitters batch cards","Sets 16oz packaging and label copy","Prices each SKU and bundle"]},
-      {n:"Compliance Watch", r:"Keeps you sellable and legal.", a:["CT food rules and FDA labeling","Flags alcohol limits on bitters","Blocks any health claim"]},
-      {n:"Sourcer", r:"Knows the cost before you buy.", a:["Bulk herb supplier pricing","Cost per 16oz unit and margin"]}
-    ],
-    skills:[["Blend Recipes","Ready"],["Label Spec","Ready"],["Market Listing Kit","On demand"]] },
-
-  { key:"content", name:"ANTON", color:"#e0409a", title:"Social & Content", role:"Finds the trend, writes the post, hands it over",
-    agents:[
-      {n:"Anton · Director", r:"Owns @naetalksomuch output.", a:["3 positive trend posts a day with scripts","Never religious, political, or adult","Packages caption, hook, and posting steps"]},
-      {n:"Scribe", r:"Brand voice and written assets.", a:["Faith Wear designs and copy","Bios, captions, sales pages in your voice"]},
-      {n:"NaeTalks Engines", r:"Daily series that never repeat.", a:["Mental Laws: 3 posts a day","Scam Watch: 1 real scam pattern daily","Agro: 4 garden scripts daily"]},
-      {n:"Roster Desk", r:"UPTOWN creator content.", a:["8 photos and captions a day","Face-consistent and AI labeled","Tasteful, fully clothed, white label"]}
-    ],
-    skills:[["Daily Trend Posts","Daily 7 AM"],["Mental Laws","Daily"],["Agro Machine","Daily"],["Scam Watch","Daily"],["Roster Engine","Daily"]] },
-
-  { key:"product", name:"VANGUARD", color:"#7c6cf0", title:"Product & Research", role:"Finds what sells before you build it",
-    agents:[
-      {n:"Vanguard · Director", r:"Owns research and product builds.", a:["Runs the winning product radar","Builds the digital products and PDFs","Audits funnels and writes the fix list"]},
-      {n:"Radar", r:"Public data only, evidence logged.", a:["Daily TikTok Shop winner scan","Hook plus evidence per pick","No invented numbers, ever"]},
-      {n:"Pack Builder", r:"Turns research into sellable files.", a:["Printable templates and guides","Listing copy and cover images"]}
-    ],
-    skills:[["Winning Product Radar","Daily 6 AM"],["Market Area Scans","On request"],["Funnel Audits","On request"],["Template Packs","On request"]] },
-
-  { key:"money", name:"MISS MONEY", color:"#00a896", title:"Money & Grants", role:"Finds money, watches bills, keeps launches moving",
-    agents:[
-      {n:"Grant Engine", r:"Verified opportunities only.", a:["Daily grant scan for consultants and beauty","No gated or fake sources","Deadline and fit noted per grant"]},
-      {n:"Bid Watch", r:"City and county work.", a:["Daily Hartford bid board check","Matches bids to your lanes","Flags due dates"]},
-      {n:"Sentinel", r:"Keeps the lights on.", a:["Failed payments and domains","Subscription waste calls","Shutoff warnings"]},
-      {n:"Launch Desk", r:"Nothing sits half-finished.", a:["Go-Live digest with time estimates","Etsy kit: title, tags, cover, file"]}
-    ],
-    skills:[["Grant Engine","Daily"],["Hartford Bid Watch","Daily"],["Billing Watch","Continuous"],["Go-Live Digest","Daily"]] },
-
-  { key:"clients", name:"HALO", color:"#22b573", title:"Clients & Family", role:"Onboards people and keeps them taken care of",
-    agents:[
-      {n:"Halo · Director", r:"Owns client experience.", a:["Onboarding and check-ins","Family test clients 001 to 006","Keeps promises and dates straight"]},
-      {n:"Client Studio", r:"Builds what clients asked for.", a:["Studio intros and brand kits","Character and content builds"]},
-      {n:"Follow Up", r:"Never lets a client go cold.", a:["30 day check-in reports","Drafts the next touch for approval"]}
-    ],
-    skills:[["Onboarding","Instant"],["Family Test Clients","Ongoing"],["Check-in Reports","Scheduled"]] },
-
-  { key:"life", name:"GATEKEEPER", color:"#3aa6f0", title:"Inbox, Calendar & Life", role:"Keeps the day clean so you only see what matters",
-    agents:[
-      {n:"Gatekeeper · Director", r:"Owns your attention.", a:["Morning brief at 8","Files promos away from real mail","Never deletes, never sends for you"]},
-      {n:"Calendar Keeper", r:"Catches clashes before they cost you.", a:["7 day conflict check daily","Suggests which duplicate to drop"]},
-      {n:"Reply Writer", r:"Your voice, ready to send.", a:["Drafts replies in your tone","Waits for your yes"]}
-    ],
-    skills:[["Morning Brief","Daily 8 AM"],["Email Labeling","Daily 8:30 AM"],["Conflict Check","Daily 9 AM"],["Reply Drafts","On request"]] }
-];
-
-const VENTURES = [
-  ["Penhaus Consulting","OPS, Boardroom, Provision, Ledger, Private AI Setup. High ticket, annual first."],
-  ["Penhaus Digitals (Etsy)","Mom and grandparent printables: AI Tutor Kit, giant Plush template packs, guides."],
-  ["NaeTalks","@naetalksomuch: trends, mental laws, scam watch. VIP $47/mo, Founders $497/yr."],
-  ["Penhaus Agro","Homestead and garden affiliate content, 4 scripts daily."],
-  ["Penhaus Play Plush","Kids-safe Plush jam video and printable giant Plush templates."],
-  ["Beauty Lane","Salons and cosmetologists: audits, grants, high-ticket offers."],
-  ["Penhaus Roots","Herbal teas, potted starts, 16oz non-alcoholic bitters."],
-  ["UPTOWN Roster","AI creator roster on Fanvue. Tasteful, AI labeled, white label."]
-];
-
-const TOOLS = [
-  ["Gmail","Connected","Receives, labels, and drafts. Never sends without your yes.","ok"],
-  ["Google Calendar","Connected","Reads events, flags conflicts, never moves your meetings.","ok"],
-  ["Instagram","Connected","Publishes approved content, replies to DMs.","ok"],
-  ["Slack","Connected","Reads channels, posts updates.","ok"],
-  ["GitHub","Connected","Repos, commits, pull requests for the chatbot build.","ok"],
-  ["Stripe","Live links","9 checkout links across your service pages, all working.","ok"],
-  ["Phone · WhatsApp · iMessage","Live","Calls and texts from your agent number.","ok"],
-  ["Etsy","Needs your login","Listing publishing only. Set it up in the cloud browser when you are ready.","no"],
-  ["Cloudflare · Vercel","Your hand","Site deploys: zip prepared, upload needs your account.","no"],
-  ["Zapier","Not a connector here","Route it two ways: a webhook trigger so Zapier pushes events in, or the agent API so Zapier calls out. Tell me which app you want connected and I will wire it.","no"]
-];
-
-function el(html){const d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild;}
-
-// TEAM
-const team=document.getElementById('view-team');
-DEPTS.forEach(dep=>{
-  const card=el('<div class="dept">'+
-    '<button class="depthead" aria-expanded="false">'+
-      '<span class="dot" style="background:'+dep.color+'">'+dep.name.slice(0,2)+'</span>'+
-      '<span><span class="dname">'+dep.title+'</span><span class="drole">'+dep.name+' · '+dep.role+'</span></span>'+
-      '<span class="chev">›</span></button>'+
-    '<div class="body">'+
-      dep.agents.map(a=>'<div class="agent"><div class="aname">'+a.n+'</div><div class="arole">'+a.r+'</div><ul class="acts">'+a.a.map(x=>'<li>'+x+'</li>').join('')+'</ul></div>').join('')+
-      '<div>'+dep.skills.map(s=>'<span class="tag" style="background:'+dep.color+'22;color:'+dep.color+'">'+s[0]+' · '+s[1]+'</span>').join('')+'</div>'+
-    '</div></div>');
-  card.dataset.text=(dep.title+' '+dep.name+' '+dep.agents.map(a=>a.n+' '+a.r+' '+a.a.join(' ')).join(' ')).toLowerCase();
-  card.querySelector('.depthead').addEventListener('click',()=>{
-    const open=card.classList.toggle('open');
-    card.querySelector('.depthead').setAttribute('aria-expanded',open?'true':'false');
-  });
-  team.appendChild(card);
-});
-team.appendChild(el('<div class="sec">Ventures</div>'));
-const vg=el('<div class="tools"></div>');
-VENTURES.forEach(v=>vg.appendChild(el('<div class="tool"><div class="tname">'+v[0]+'</div><div class="tstate" style="color:#9a9aa6;font-size:11.5px">'+v[1]+'</div></div>')));
-team.appendChild(vg);
-
-// SKILLS REGISTRY
-const skills=document.getElementById('view-skills');
-skills.appendChild(el('<div class="sec">Skills registry · who owns what</div>'));
-const reg=el('<div class="reg"></div>');
-DEPTS.forEach(dep=>{
-  dep.skills.forEach(s=>{
-    const row=el('<div class="row"><div style="flex:1"><div class="rname">'+s[0]+'</div><div class="rdesc">'+dep.title+' · run by '+dep.name+'</div></div><div class="pill" style="background:'+dep.color+'22;color:'+dep.color+'">'+s[1]+'</div></div>');
-    row.dataset.text=(s[0]+' '+dep.name+' '+dep.title+' '+s[1]).toLowerCase();
-    reg.appendChild(row);
-  });
-});
-skills.appendChild(reg);
-
-// TOOLS
-const tools=document.getElementById('view-tools');
-tools.appendChild(el('<div class="sec">Tools & integrations</div>'));
-const tg=el('<div class="tools" style="grid-template-columns:1fr"></div>');
-TOOLS.forEach(t=>tg.appendChild(el('<div class="tool"><div class="tname">'+t[0]+' <span class="'+t[3]+'" style="font-size:11px;font-weight:700">· '+t[1]+'</span></div><div class="tstate" style="color:#9a9aa6;font-size:11.5px;margin-top:4px">'+t[2]+'</div></div>')));
-tools.appendChild(tg);
-
-// TABS
-document.querySelectorAll('.tab').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b===btn));
-    ['team','skills','tools'].forEach(v=>{
-      document.getElementById('view-'+v).style.display=(v===btn.dataset.view)?'block':'none';
-    });
-    document.getElementById('q').value='';
-    document.querySelectorAll('.dept').forEach(c=>c.style.display='block');
-    document.querySelectorAll('.row').forEach(r=>r.style.display='flex');
-  });
-});
-
-// SEARCH
-document.getElementById('q').addEventListener('input',e=>{
-  const term=e.target.value.trim().toLowerCase();
-  document.querySelectorAll('.dept').forEach(c=>{
-    const hit=!term||c.dataset.text.includes(term);
-    c.style.display=hit?'block':'none';
-    if(hit&&term)c.classList.add('open');
-  });
-  document.querySelectorAll('.row').forEach(r=>{
-    r.style.display=(!term||r.dataset.text.includes(term))?'flex':'none';
-  });
-});
-
-const first=document.querySelector('.dept');
-if(first){first.classList.add('open');first.querySelector('.depthead').setAttribute('aria-expanded','true');}
-</script>
 </body>
 </html>
